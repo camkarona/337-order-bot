@@ -6,392 +6,253 @@
 <title>337 김치BBQ Order</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Khmer:wght@400;600;700&family=Noto+Sans+KR:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Khmer:wght@400;600;700&family=Noto+Sans+KR:wght@400;600;700&display=swap');
 
-  :root {
-    --red: #C8102E;
-    --gold: #F5A623;
-    --dark: #1A1A1A;
-    --card: #FFFFFF;
-    --bg: #F5F0EB;
-    --text: #1A1A1A;
-    --muted: #888;
-    --border: #E8E0D8;
-    --pork: #FF6B6B;
-    --beef: #8B1A1A;
-    --kimchi: #E83A3A;
-    --veg: #4CAF50;
-    --pickle: #FF9800;
-  }
+:root {
+  --red: #C8102E;
+  --gold: #F5A623;
+  --dark: #1A1A1A;
+  --bg: #F5F0EB;
+  --card: #FFFFFF;
+  --muted: #888;
+  --border: #E8E0D8;
+  --pork: #FF6B6B;
+  --beef: #C0392B;
+  --kimchi: #E83A3A;
+  --veg: #27AE60;
+  --pickle: #E67E22;
+  --header-h: 62px;
+  --notice-h: 56px;
+}
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
-  body {
-    font-family: 'Noto Sans Khmer', 'Noto Sans KR', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    padding-bottom: 100px;
-  }
+body {
+  font-family: 'Noto Sans Khmer', 'Noto Sans KR', sans-serif;
+  background: var(--bg);
+  color: var(--dark);
+  min-height: 100vh;
+  padding-bottom: 120px;
+}
 
-  /* HEADER */
-  .header {
-    background: var(--dark);
-    padding: 14px 16px 10px;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .header-logo {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .logo-badge {
-    background: var(--red);
-    color: white;
-    font-weight: 700;
-    font-size: 18px;
-    width: 42px; height: 42px;
-    border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    letter-spacing: -1px;
-  }
-  .logo-text {
-    color: white;
-    line-height: 1.2;
-  }
-  .logo-text .main { font-size: 15px; font-weight: 700; }
-  .logo-text .sub { font-size: 11px; color: var(--gold); }
-  .cart-btn {
-    background: var(--gold);
-    border: none;
-    border-radius: 20px;
-    padding: 7px 14px;
-    font-weight: 700;
-    font-size: 12px;
-    cursor: pointer;
-    display: flex; align-items: center; gap: 5px;
-    line-height: 1.3;
-    text-align: center;
-  }
-  .cart-count {
-    background: var(--red);
-    color: white;
-    border-radius: 50%;
-    width: 18px; height: 18px;
-    font-size: 11px;
-    display: flex; align-items: center; justify-content: center;
-  }
+/* ── HEADER ── */
+.header {
+  background: var(--dark);
+  height: var(--header-h);
+  padding: 0 16px;
+  position: sticky; top: 0; z-index: 300;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.logo-wrap { display: flex; align-items: center; gap: 10px; }
+.logo-badge {
+  background: var(--red); color: white;
+  font-weight: 700; font-size: 18px;
+  width: 40px; height: 40px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+}
+.logo-text .main { color: white; font-size: 15px; font-weight: 700; }
+.logo-text .sub  { color: var(--gold); font-size: 11px; }
+.cart-btn {
+  background: var(--gold); border: none; border-radius: 20px;
+  padding: 6px 12px; cursor: pointer;
+  display: flex; align-items: center; gap: 6px;
+  font-family: inherit;
+}
+.cart-btn-text .t1 { display: block; font-size: 11px; font-weight: 700; }
+.cart-btn-text .t2 { display: block; font-size: 10px; opacity: 0.8; }
+.cart-count {
+  background: var(--red); color: white; border-radius: 50%;
+  width: 18px; height: 18px; font-size: 11px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+}
 
-  /* CATEGORY TABS — 2행 고정 */
-  .tabs {
-    background: var(--dark);
-    padding: 8px 16px 12px;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(2, auto);
-    gap: 7px;
-  }
-  .tab {
-    padding: 8px 6px;
-    border-radius: 20px;
-    border: none;
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    background: rgba(255,255,255,0.1);
-    color: rgba(255,255,255,0.7);
-    transition: all 0.2s;
-    font-family: 'Noto Sans Khmer', 'Noto Sans KR', sans-serif;
-    text-align: center;
-    white-space: nowrap;
-  }
-  /* 2행: VEGETABLES, PICKLES → 각각 절반씩 */
-  .tab:nth-child(4),
-  .tab:nth-child(5) {
-    grid-column: span 1;
-  }
-  /* 2행 2개를 가운데 정렬 — 빈 셀 처리 */
-  .tabs-row2 {
-    grid-column: 1 / -1;
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 7px;
-  }
-  .tab.active { color: var(--dark); }
-  .tab[data-cat="pork"].active   { background: var(--pork); }
-  .tab[data-cat="beef"].active   { background: #D4A0A0; }
-  .tab[data-cat="kimchi"].active { background: var(--kimchi); }
-  .tab[data-cat="vegetable"].active { background: var(--veg); color: white; }
-  .tab[data-cat="pickle"].active { background: var(--pickle); }
+/* ── NOTICE ── */
+.notice {
+  background: linear-gradient(135deg, #2C1810, #4A2318);
+  border-bottom: 2px solid var(--gold);
+  height: var(--notice-h);
+  padding: 0 16px;
+  display: flex; align-items: center; gap: 10px;
+  position: sticky; top: var(--header-h); z-index: 299;
+}
+.notice-text { font-size: 11px; color: #F5E6C8; line-height: 1.5; }
+.notice-text b { color: var(--gold); }
 
-  /* CATEGORY SECTION — 전체 스크롤 방식 */
-  .section {
-    padding: 16px;
-    display: block;
-  }
+/* ── TABS ── */
+.tabs {
+  background: var(--dark);
+  padding: 8px 16px 10px;
+  position: sticky;
+  top: calc(var(--header-h) + var(--notice-h));
+  z-index: 298;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 6px;
+}
+.tabs-row2 {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+.tab {
+  padding: 7px 4px; border-radius: 18px; border: none;
+  font-size: 12px; font-weight: 600; cursor: pointer; text-align: center;
+  background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.7);
+  transition: all 0.2s; font-family: inherit; white-space: nowrap;
+}
+.tab.active { color: #1A1A1A; }
+.tab[data-cat="pork"].active     { background: var(--pork); }
+.tab[data-cat="beef"].active     { background: #E8A0A0; }
+.tab[data-cat="kimchi"].active   { background: var(--kimchi); color: white; }
+.tab[data-cat="vegetable"].active{ background: var(--veg); color: white; }
+.tab[data-cat="pickle"].active   { background: var(--pickle); }
 
-  .section-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 14px;
-  }
-  .section-icon {
-    font-size: 24px;
-  }
-  .section-title-kr { font-size: 18px; font-weight: 700; }
-  .section-title-km { font-size: 13px; color: var(--muted); }
+/* ── SECTIONS ── */
+.section { padding: 16px; display: block; }
 
-  /* MENU CARDS */
-  .menu-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
+.section-header {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 14px; padding-top: 4px;
+}
+.section-icon { font-size: 22px; }
+.section-title-en { font-size: 17px; font-weight: 700; }
+.section-title-km { font-size: 12px; color: var(--muted); }
 
-  .menu-card {
-    background: var(--card);
-    border-radius: 16px;
-    overflow: hidden;
-    display: flex;
-    align-items: stretch;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    border: 1px solid var(--border);
-  }
+.menu-grid { display: flex; flex-direction: column; gap: 10px; }
 
-  .menu-img {
-    width: 90px;
-    min-height: 90px;
-    object-fit: cover;
-    flex-shrink: 0;
-    background: #f0ebe5;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 36px;
-  }
-  .menu-img img {
-    width: 90px;
-    height: 90px;
-    object-fit: cover;
-  }
-  .menu-img.placeholder {
-    background: linear-gradient(135deg, #f0ebe5, #e8e0d8);
-    color: #ccc;
-    font-size: 13px;
-    text-align: center;
-    padding: 8px;
-    line-height: 1.3;
-  }
+.menu-card {
+  background: var(--card); border-radius: 14px;
+  display: flex; align-items: stretch;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.07);
+  border: 1px solid var(--border); overflow: hidden;
+}
+.menu-img {
+  width: 86px; min-height: 86px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: #f0ebe5;
+}
+.menu-img img { width: 86px; height: 86px; object-fit: cover; }
+.menu-img.placeholder {
+  background: linear-gradient(135deg, #f0ebe5, #e8e0d8);
+  font-size: 12px; color: #bbb; text-align: center; padding: 8px; line-height: 1.4;
+}
+.menu-info {
+  flex: 1; padding: 11px 12px;
+  display: flex; flex-direction: column; justify-content: space-between;
+}
+.tag-pork { color: var(--pork); font-size: 9px; font-weight: 700; letter-spacing: 1px; }
+.tag-beef { color: var(--beef); font-size: 9px; font-weight: 700; letter-spacing: 1px; }
+.menu-name-km { font-size: 13px; font-weight: 700; line-height: 1.3; margin-top: 2px; }
+.menu-name-kr { font-size: 11px; color: var(--muted); }
+.menu-bottom { display: flex; align-items: center; justify-content: space-between; margin-top: 8px; }
+.menu-price { font-size: 15px; font-weight: 700; color: var(--red); }
+.qty-control { display: flex; align-items: center; gap: 8px; }
+.qty-btn {
+  width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--border);
+  background: white; font-size: 16px; font-weight: 700; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; color: var(--dark);
+  transition: transform 0.1s;
+}
+.qty-btn:active { transform: scale(0.88); }
+.qty-btn.plus { background: var(--red); border-color: var(--red); color: white; }
+.qty-num { font-size: 15px; font-weight: 700; min-width: 18px; text-align: center; }
 
-  .menu-info {
-    flex: 1;
-    padding: 12px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-  }
-  .menu-name-km { font-size: 14px; font-weight: 700; line-height: 1.3; }
-  .menu-name-kr { font-size: 11px; color: var(--muted); margin-top: 2px; }
-  .menu-weight { font-size: 11px; color: var(--muted); }
+/* ── BOTTOM BAR ── */
+.bottom-bar {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  padding: 10px 16px 14px; background: white;
+  border-top: 1px solid var(--border); display: none; z-index: 200;
+}
+.bottom-bar.show { display: block; }
+.bottom-bar-btn {
+  width: 100%; background: var(--dark); color: white;
+  border: none; border-radius: 13px; padding: 14px 16px;
+  font-size: 14px; font-weight: 700; cursor: pointer;
+  display: flex; align-items: center; justify-content: space-between;
+  font-family: inherit;
+}
+.bottom-total-badge {
+  background: var(--red); padding: 4px 10px; border-radius: 10px; font-size: 13px;
+}
 
-  .menu-bottom {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-top: 8px;
-  }
-  .menu-price {
-    font-size: 16px;
-    font-weight: 700;
-    color: var(--red);
-  }
+/* ── CART MODAL ── */
+.cart-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.5); z-index: 400; align-items: flex-end;
+}
+.cart-overlay.open { display: flex; }
+.cart-sheet {
+  background: white; border-radius: 22px 22px 0 0;
+  width: 100%; max-height: 88vh; overflow-y: auto;
+  padding: 18px 16px 24px;
+}
+.cart-handle { width: 38px; height: 4px; background: #ddd; border-radius: 2px; margin: 0 auto 16px; }
+.cart-title { font-size: 17px; font-weight: 700; margin-bottom: 14px; }
+.cart-item {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 10px 0; border-bottom: 1px solid var(--border);
+}
+.cart-item-name { font-size: 13px; font-weight: 600; }
+.cart-item-sub  { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.cart-item-right { display: flex; align-items: center; gap: 10px; }
+.cart-item-price { font-size: 14px; font-weight: 700; color: var(--red); }
+.cart-remove { background: none; border: none; font-size: 17px; cursor: pointer; color: #ccc; }
+.cart-empty { text-align: center; padding: 28px; color: var(--muted); font-size: 13px; line-height: 1.8; }
+.cart-total-box {
+  background: var(--bg); border-radius: 12px; padding: 13px 16px;
+  display: flex; justify-content: space-between; align-items: center; margin: 14px 0;
+}
+.cart-total-label { font-size: 14px; font-weight: 600; }
+.cart-total-price { font-size: 22px; font-weight: 700; color: var(--red); }
+.order-btn {
+  width: 100%; background: var(--red); color: white;
+  border: none; border-radius: 13px; padding: 15px;
+  font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit;
+}
+.order-btn:disabled { background: #ccc; cursor: not-allowed; }
 
-  .qty-control {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .qty-btn {
-    width: 28px; height: 28px;
-    border-radius: 50%;
-    border: 2px solid var(--border);
-    background: white;
-    font-size: 16px;
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    font-weight: 700;
-    color: var(--dark);
-    transition: all 0.15s;
-  }
-  .qty-btn:active { transform: scale(0.9); }
-  .qty-btn.plus {
-    background: var(--red);
-    border-color: var(--red);
-    color: white;
-  }
-  .qty-num {
-    font-size: 15px;
-    font-weight: 700;
-    min-width: 20px;
-    text-align: center;
-  }
+/* ── ORDER CONFIRM ── */
+.confirm-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.88); z-index: 500;
+  align-items: center; justify-content: center; padding: 20px;
+}
+.confirm-overlay.open { display: flex; }
+.confirm-box {
+  background: white; border-radius: 20px; padding: 24px;
+  width: 100%; max-width: 360px; text-align: center;
+}
+.confirm-icon  { font-size: 52px; margin-bottom: 10px; }
+.confirm-title { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+.confirm-sub   { font-size: 12px; color: var(--muted); margin-bottom: 14px; }
+.confirm-msg {
+  background: var(--bg); border-radius: 10px; padding: 12px;
+  text-align: left; font-size: 11px; line-height: 1.7;
+  white-space: pre-wrap; max-height: 180px; overflow-y: auto; margin-bottom: 12px;
+}
+.confirm-total { font-size: 22px; font-weight: 700; color: var(--red); margin-bottom: 16px; }
+.confirm-close {
+  width: 100%; background: var(--red); color: white;
+  border: none; border-radius: 12px; padding: 14px;
+  font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit;
+}
 
-  /* CART MODAL */
-  .cart-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.5);
-    z-index: 200;
-    align-items: flex-end;
-  }
-  .cart-overlay.open { display: flex; }
-
-  .cart-sheet {
-    background: white;
-    border-radius: 24px 24px 0 0;
-    width: 100%;
-    max-height: 85vh;
-    overflow-y: auto;
-    padding: 20px 16px;
-  }
-  .cart-handle {
-    width: 40px; height: 4px;
-    background: #ddd;
-    border-radius: 2px;
-    margin: 0 auto 16px;
-  }
-  .cart-title {
-    font-size: 18px; font-weight: 700;
-    margin-bottom: 16px;
-    display: flex; align-items: center; gap: 8px;
-  }
-
-  .cart-items { margin-bottom: 16px; }
-  .cart-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 0;
-    border-bottom: 1px solid var(--border);
-  }
-  .cart-item-name { font-size: 13px; font-weight: 600; }
-  .cart-item-name-kr { font-size: 11px; color: var(--muted); }
-  .cart-item-right { display: flex; align-items: center; gap: 10px; }
-  .cart-item-price { font-size: 14px; font-weight: 700; color: var(--red); }
-  .cart-remove {
-    background: none; border: none;
-    font-size: 18px; cursor: pointer; color: #ccc;
-    padding: 2px;
-  }
-
-  .cart-empty {
-    text-align: center;
-    padding: 30px;
-    color: var(--muted);
-    font-size: 14px;
-  }
-
-  .cart-total {
-    background: var(--bg);
-    border-radius: 12px;
-    padding: 14px;
-    margin-bottom: 16px;
-  }
-  .cart-total-row {
-    display: flex;
-    justify-content: space-between;
-    font-size: 16px;
-    font-weight: 700;
-  }
-  .cart-total-price { color: var(--red); font-size: 20px; }
-
-  .order-btn {
-    width: 100%;
-    background: var(--red);
-    color: white;
-    border: none;
-    border-radius: 14px;
-    padding: 16px;
-    font-size: 16px;
-    font-weight: 700;
-    cursor: pointer;
-    font-family: 'Noto Sans Khmer', 'Noto Sans KR', sans-serif;
-    transition: opacity 0.2s;
-  }
-  .order-btn:active { opacity: 0.8; }
-  .order-btn:disabled { background: #ccc; cursor: not-allowed; }
-
-  /* BOTTOM CART BAR */
-  .bottom-bar {
-    position: fixed;
-    bottom: 0; left: 0; right: 0;
-    padding: 12px 16px;
-    background: white;
-    border-top: 1px solid var(--border);
-    display: none;
-    z-index: 150;
-  }
-  .bottom-bar.show { display: block; }
-  .bottom-bar-btn {
-    width: 100%;
-    background: var(--dark);
-    color: white;
-    border: none;
-    border-radius: 14px;
-    padding: 14px;
-    font-size: 15px;
-    font-weight: 700;
-    cursor: pointer;
-    font-family: 'Noto Sans Khmer', 'Noto Sans KR', sans-serif;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .bottom-bar-total {
-    background: var(--red);
-    padding: 4px 10px;
-    border-radius: 10px;
-    font-size: 14px;
-  }
-
-  .notice-banner {
-    background: linear-gradient(135deg, #2C1810, #4A2318);
-    border-bottom: 2px solid var(--gold);
-    padding: 10px 16px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .notice-banner .notice-icon { font-size: 18px; flex-shrink: 0; }
-  .notice-banner .notice-text { font-size: 12px; color: #F5E6C8; line-height: 1.5; }
-  .notice-banner .notice-text strong { color: var(--gold); font-size: 13px; }
-
-  .footer {
-    background: var(--dark);
-    color: rgba(255,255,255,0.4);
-    text-align: center;
-    padding: 20px 16px;
-    font-size: 10px;
-    letter-spacing: 1px;
-    line-height: 1.8;
-    margin-top: 20px;
-  }
-  .footer .footer-logo { color: var(--gold); font-weight: 700; font-size: 13px; letter-spacing: 2px; }
-  .footer .footer-copy { color: rgba(255,255,255,0.3); font-size: 9px; margin-top: 4px; }
-
-  .tag-pork { color: var(--pork); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
-  .tag-beef { color: var(--beef); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+/* ── FOOTER ── */
+.footer {
+  background: var(--dark); text-align: center;
+  padding: 20px 16px; margin-top: 10px;
+}
+.footer-logo { color: var(--gold); font-weight: 700; font-size: 13px; letter-spacing: 2px; }
+.footer-sub  { color: rgba(255,255,255,0.5); font-size: 11px; margin-top: 5px; }
+.footer-copy { color: rgba(255,255,255,0.25); font-size: 9px; margin-top: 4px; letter-spacing: 1px; }
 </style>
 </head>
 <body>
 
+<!-- HEADER -->
 <div class="header">
-  <div class="header-logo">
+  <div class="logo-wrap">
     <div class="logo-badge">337</div>
     <div class="logo-text">
       <div class="main">김치 + BBQ</div>
@@ -400,58 +261,56 @@
   </div>
   <button class="cart-btn" onclick="openCart()">
     🛒
-    <span>
-      <span style="display:block;font-size:11px;">កន្ត្រកខ្ញុំ</span>
-      <span style="display:block;font-size:10px;opacity:0.8;">장바구니</span>
+    <span class="cart-btn-text">
+      <span class="t1">កន្ត្រកខ្ញុំ</span>
+      <span class="t2">장바구니</span>
     </span>
-    <div class="cart-count" id="cartCountHeader">0</div>
+    <div class="cart-count" id="cartCount">0</div>
   </button>
 </div>
 
-<div class="notice-banner">
-  <span class="notice-icon">💡</span>
+<!-- NOTICE -->
+<div class="notice">
+  <span style="font-size:18px;flex-shrink:0">💡</span>
   <div class="notice-text">
-    <strong>របៀបកម្មង់ / 주문 방법</strong><br>
-    សូមជ្រើសរើសម្ហូប រួចចុច 🛒 បន្ទាប់មកចុច បញ្ជូនការកម្មង់<br>
-    메뉴를 선택하신 후 장바구니 → 주문하기 버튼을 눌러주세요
+    <b>របៀបកម្មង់</b> — ជ្រើសម្ហូប រួចចុច 🛒 បន្ទាប់មកចុច បញ្ជូន<br>
+    메뉴 선택 → 장바구니 → 주문하기
   </div>
 </div>
 
+<!-- TABS -->
 <div class="tabs" id="tabs">
   <div id="tabs-row1" style="display:contents"></div>
   <div class="tabs-row2" id="tabs-row2"></div>
 </div>
 
+<!-- SECTIONS -->
 <div id="sections"></div>
 
+<!-- FOOTER -->
 <footer class="footer">
   <div class="footer-logo">✦ 337 KIMCHI + BBQ ✦</div>
-  <div style="color:rgba(255,255,255,0.5); font-size:11px; margin-top:6px;">
-    Authentic Korean Flavors, Delivered Fresh in Phnom Penh
-  </div>
-  <div class="footer-copy">
-    © 2026 337 Kimchi + BBQ. All Rights Reserved.<br>
-    Powered by 까로나 · Made with ❤️ in Cambodia
-  </div>
+  <div class="footer-sub">Authentic Korean Flavors · Delivered Fresh in Phnom Penh</div>
+  <div class="footer-copy">© 2026 337 Kimchi + BBQ · All Rights Reserved · Made with ❤️ in Cambodia</div>
 </footer>
 
+<!-- BOTTOM BAR -->
 <div class="bottom-bar" id="bottomBar">
   <button class="bottom-bar-btn" onclick="openCart()">
     <span>🛒 មើលការកម្មង់ / 주문 확인</span>
-    <span class="bottom-bar-total" id="bottomTotal">$0</span>
+    <span class="bottom-total-badge" id="bottomTotal">$0</span>
   </button>
 </div>
 
+<!-- CART MODAL -->
 <div class="cart-overlay" id="cartOverlay" onclick="handleOverlayClick(event)">
-  <div class="cart-sheet" id="cartSheet">
+  <div class="cart-sheet">
     <div class="cart-handle"></div>
     <div class="cart-title">🧾 ការកម្មង់របស់អ្នក / 내 주문</div>
-    <div class="cart-items" id="cartItems"></div>
-    <div class="cart-total" id="cartTotal" style="display:none">
-      <div class="cart-total-row">
-        <span>សរុប / 합계</span>
-        <span class="cart-total-price" id="cartTotalPrice">$0</span>
-      </div>
+    <div id="cartItems"></div>
+    <div class="cart-total-box" id="cartTotalBox" style="display:none">
+      <span class="cart-total-label">💰 សរុប / 합계</span>
+      <span class="cart-total-price" id="cartTotalPrice">$0</span>
     </div>
     <button class="order-btn" id="orderBtn" onclick="submitOrder()" disabled>
       ✅ បញ្ជូនការកម្មង់ / 주문하기
@@ -459,392 +318,360 @@
   </div>
 </div>
 
+<!-- ORDER CONFIRM -->
+<div class="confirm-overlay" id="confirmOverlay">
+  <div class="confirm-box">
+    <div class="confirm-icon">✅</div>
+    <div class="confirm-title">ការកម្មង់បានបញ្ជូន!</div>
+    <div class="confirm-sub">주문이 전송되었습니다 🎉</div>
+    <div class="confirm-msg" id="confirmMsg"></div>
+    <div class="confirm-total" id="confirmTotal"></div>
+    <button class="confirm-close" onclick="closeConfirm()">បិទ / 닫기</button>
+  </div>
+</div>
+
 <script>
-// ============================================================
-// MENU DATA — 구글 시트 CSV URL
-// ============================================================
+// ── CONFIG ──────────────────────────────────────
 const SHEET_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT_2aG6XhvauHZaFadlzt3_4BVOnzHLXvmO_QXr67ygCelDSsubqSpDllQa4ICKx1cm01955YurNp-T/pub?output=csv';
+const BOT_TOKEN = '8641523947:AAFk0RrMLG4zaMatZjjX-SrJlRkNzztgRxI';
+const OWNER_ID  = '718784244'; // 테스트용 까로나 ID → 나중에 아내 ID로 교체
 
-// 이미지 없을 때 카테고리별 이모지
-const CAT_EMOJI = {
-  pork: '🐷', beef: '🐄', kimchi: '🥬', vegetable: '🥗', pickle: '🫙'
-};
-
-const CAT_LABELS = {
-  pork:      { kr: 'PORK',       km: 'សាច់ជ្រូក', icon: '🐷' },
-  beef:      { kr: 'BEEF',       km: 'សាច់គោ',   icon: '🐄' },
-  kimchi:    { kr: 'KIMCHI',     km: 'គីមឈី',    icon: '🥬' },
-  vegetable: { kr: 'VEGETABLES', km: 'បន្លែ',    icon: '🥗' },
-  pickle:    { kr: 'PICKLES',    km: 'ជ្រក់',    icon: '🫙' }
+const CAT_EMOJI = { pork:'🐷', beef:'🐄', kimchi:'🥬', vegetable:'🥗', pickle:'🫙' };
+const CAT_INFO  = {
+  pork:      { en:'🐷 PORK',       km:'សាច់ជ្រូក' },
+  beef:      { en:'🐄 BEEF',       km:'សាច់គោ'   },
+  kimchi:    { en:'🥬 KIMCHI',     km:'គីមឈី'    },
+  vegetable: { en:'🥗 VEGETABLES', km:'បន្លែ'     },
+  pickle:    { en:'🫙 PICKLES',    km:'ជ្រក់'     },
 };
 
 let menuData = {};
-let cart = {};
+let cart     = {};
 
-// ============================================================
-// CSV PARSE
-// ============================================================
+// ── CSV PARSE ────────────────────────────────────
 function parseCSV(text) {
   const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
-  const data = { pork: [], beef: [], kimchi: [], vegetable: [], pickle: [] };
-  let currentCat = null;
-
+  const data  = { pork:[], beef:[], kimchi:[], vegetable:[], pickle:[] };
+  let cur = null;
   for (const line of lines) {
-    const cols = line.split(',');
-    const raw = cols.map(c => c.replace(/^"|"$/g, '').trim());
-
-    // 카테고리 헤더 감지
-    const catRaw = (raw[1] || '').toLowerCase();
-    if (catRaw.includes('pork'))      { currentCat = 'pork';      continue; }
-    if (catRaw.includes('beef'))      { currentCat = 'beef';       continue; }
-    if (catRaw.includes('kimchi'))    { currentCat = 'kimchi';     continue; }
-    if (catRaw.includes('vegetable')) { currentCat = 'vegetable';  continue; }
-    if (catRaw.includes('pickle'))    { currentCat = 'pickle';     continue; }
-
-    // 번호 행 감지 (col[1]이 숫자)
+    const raw = line.split(',').map(c => c.replace(/^"|"$/g,'').trim());
+    const c1  = (raw[1]||'').toLowerCase();
+    if (c1.includes('pork'))      { cur='pork';      continue; }
+    if (c1.includes('beef'))      { cur='beef';       continue; }
+    if (c1.includes('kimchi'))    { cur='kimchi';     continue; }
+    if (c1.includes('vegetable')) { cur='vegetable';  continue; }
+    if (c1.includes('pickle'))    { cur='pickle';     continue; }
     const num = parseInt(raw[1]);
-    if (!currentCat || isNaN(num)) continue;
-
-    const nameKr = raw[2] || '';
-    const nameKm = raw[3] || '';
-    const weight = raw[4] || '';
-    const price  = parseFloat(raw[6]) || 0;
-    const imgUrl = raw[7] || '';
-
-    if (!nameKr || price === 0) continue;
-
-    // 구글 드라이브 링크 → 직접 이미지 URL 변환
+    if (!cur || isNaN(num)) continue;
+    const nameKr = raw[2]||'';
+    const nameKm = raw[3]||'';
+    const weight = raw[4]||'';
+    const price  = parseFloat(raw[6])||0;
+    const imgUrl = raw[7]||'';
+    if (!nameKr || price===0) continue;
     let imgSrc = '';
     if (imgUrl.includes('drive.google.com/file/d/')) {
-      const match = imgUrl.match(/\/d\/([a-zA-Z0-9_-]+)/);
-      if (match) imgSrc = `https://lh3.googleusercontent.com/d/${match[1]}`;
+      const m = imgUrl.match(/\/d\/([a-zA-Z0-9_-]+)/);
+      if (m) imgSrc = `https://lh3.googleusercontent.com/d/${m[1]}`;
     } else if (imgUrl.startsWith('http')) {
       imgSrc = imgUrl;
     }
-
-    data[currentCat].push({ id: `${currentCat}_${num}`, nameKr, nameKm, weight, price, imgSrc });
+    data[cur].push({ id:`${cur}_${num}`, nameKr, nameKm, weight, price, imgSrc });
   }
   return data;
 }
 
-// ============================================================
-// RENDER
-// ============================================================
+// ── RENDER ───────────────────────────────────────
 function renderApp() {
   const sectionsEl = document.getElementById('sections');
-  const row1El = document.getElementById('tabs-row1');
-  const row2El = document.getElementById('tabs-row2');
-  row1El.innerHTML = '';
-  row2El.innerHTML = '';
-  sectionsEl.innerHTML = '';
+  const row1El     = document.getElementById('tabs-row1');
+  const row2El     = document.getElementById('tabs-row2');
+  row1El.innerHTML = row2El.innerHTML = sectionsEl.innerHTML = '';
 
+  const row1Cats = ['pork','beef','kimchi'];
   const cats = Object.keys(menuData).filter(c => menuData[c].length > 0);
-  const row1Cats = ['pork', 'beef', 'kimchi'];
 
   cats.forEach((cat, i) => {
-    const label = CAT_LABELS[cat];
+    const info = CAT_INFO[cat];
 
     // TAB
     const tab = document.createElement('button');
-    tab.className = 'tab' + (i === 0 ? ' active' : '');
+    tab.className = 'tab' + (i===0 ? ' active' : '');
     tab.dataset.cat = cat;
-    tab.textContent = `${label.icon} ${label.kr}`;
+    tab.textContent = info.en;
     tab.onclick = () => switchTab(cat);
-    if (row1Cats.includes(cat)) row1El.appendChild(tab);
-    else row2El.appendChild(tab);
+    (row1Cats.includes(cat) ? row1El : row2El).appendChild(tab);
 
     // SECTION
     const sec = document.createElement('div');
     sec.className = 'section';
     sec.id = `sec_${cat}`;
 
-    let cardsHTML = '';
+    let cards = '';
     menuData[cat].forEach(item => {
+      const pStr = item.price%1===0 ? item.price : item.price.toFixed(1);
       const imgHTML = item.imgSrc
-        ? `<div class="menu-img"><img src="${item.imgSrc}" alt="${item.nameKr}" onerror="this.parentElement.className='menu-img placeholder'; this.parentElement.innerHTML='🖼<br>រូបភាព<br>មកដល់ឆាប់ៗ'"></div>`
-        : `<div class="menu-img placeholder">${CAT_EMOJI[cat]}<br>រូបភាពមកដល់ឆាប់ៗ<br>(준비중)</div>`;
-
-      const tagHTML = cat === 'pork'
-        ? `<span class="tag-pork">PORK</span>`
-        : cat === 'beef' ? `<span class="tag-beef">BEEF</span>` : '';
-
-      const weightHTML = item.weight ? `<div class="menu-weight">⚖️ ${item.weight}</div>` : '';
-
-      cardsHTML += `
-        <div class="menu-card" id="card_${item.id}">
-          ${imgHTML}
-          <div class="menu-info">
-            <div>
-              ${tagHTML}
-              <div class="menu-name-km">${item.nameKm || item.nameKr}</div>
-              <div class="menu-name-kr">${item.nameKr}</div>
-              ${weightHTML}
-            </div>
-            <div class="menu-bottom">
-              <div class="menu-price">$${item.price % 1 === 0 ? item.price : item.price.toFixed(1)}</div>
-              <div class="qty-control">
-                <button class="qty-btn minus" onclick="changeQty('${item.id}', -1)">−</button>
-                <span class="qty-num" id="qty_${item.id}">0</span>
-                <button class="qty-btn plus" onclick="changeQty('${item.id}', 1)">+</button>
-              </div>
+        ? `<div class="menu-img"><img src="${item.imgSrc}" alt="${item.nameKr}"
+            onerror="this.parentElement.className='menu-img placeholder';this.parentElement.innerHTML='📷<br>Coming<br>Soon'"></div>`
+        : `<div class="menu-img placeholder">${CAT_EMOJI[cat]}<br>Coming<br>Soon</div>`;
+      const tag = cat==='pork' ? `<div class="tag-pork">PORK</div>`
+                : cat==='beef' ? `<div class="tag-beef">BEEF</div>` : '';
+      cards += `
+      <div class="menu-card">
+        ${imgHTML}
+        <div class="menu-info">
+          <div>
+            ${tag}
+            <div class="menu-name-km">${item.nameKm||item.nameKr}</div>
+            <div class="menu-name-kr">${item.nameKr}${item.weight?' · '+item.weight:''}</div>
+          </div>
+          <div class="menu-bottom">
+            <div class="menu-price">$${pStr}</div>
+            <div class="qty-control">
+              <button class="qty-btn" onclick="changeQty('${item.id}',-1)">−</button>
+              <span class="qty-num" id="qty_${item.id}">0</span>
+              <button class="qty-btn plus" onclick="changeQty('${item.id}',1)">+</button>
             </div>
           </div>
-        </div>`;
+        </div>
+      </div>`;
     });
 
     sec.innerHTML = `
       <div class="section-header">
-        <span class="section-icon">${label.icon}</span>
+        <span class="section-icon">${CAT_EMOJI[cat]}</span>
         <div>
-          <div class="section-title-kr">${label.kr}</div>
-          <div class="section-title-km">${label.km}</div>
+          <div class="section-title-en">${info.en}</div>
+          <div class="section-title-km">${info.km}</div>
         </div>
       </div>
-      <div class="menu-grid">${cardsHTML}</div>`;
+      <div class="menu-grid">${cards}</div>`;
 
     sectionsEl.appendChild(sec);
   });
+
+  setTimeout(setupScrollSpy, 400);
 }
 
+// ── SCROLL SPY ───────────────────────────────────
 function switchTab(cat) {
-  // 탭 하이라이트
+  setActiveTab(cat);
+  document.getElementById(`sec_${cat}`)?.scrollIntoView({ behavior:'smooth', block:'start' });
+}
+function setActiveTab(cat) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.querySelector(`.tab[data-cat="${cat}"]`)?.classList.add('active');
-  // 해당 섹션으로 스크롤
-  const sec = document.getElementById(`sec_${cat}`);
-  if (sec) sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
-
-// 스크롤 시 탭 자동 활성화 (IntersectionObserver)
 function setupScrollSpy() {
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        const cat = entry.target.id.replace('sec_', '');
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        document.querySelector(`.tab[data-cat="${cat}"]`)?.classList.add('active');
-      }
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) setActiveTab(e.target.id.replace('sec_',''));
     });
-  }, { threshold: 0.3, rootMargin: '-60px 0px -60% 0px' });
-
-  document.querySelectorAll('.section').forEach(sec => observer.observe(sec));
+  }, { threshold: 0.25, rootMargin: '-100px 0px -55% 0px' });
+  document.querySelectorAll('.section').forEach(s => observer.observe(s));
 }
 
-// 효과음 (Web Audio API)
-let audioCtx = null;
-function getAudioCtx() {
-  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  return audioCtx;
-}
-function playSound(type) {
+// ── SOUND ────────────────────────────────────────
+let actx = null;
+function sound(type) {
   try {
-    const ctx = getAudioCtx();
-    const o = ctx.createOscillator();
-    const g = ctx.createGain();
-    o.connect(g); g.connect(ctx.destination);
-    if (type === 'plus') {
-      o.frequency.setValueAtTime(600, ctx.currentTime);
-      o.frequency.linearRampToValueAtTime(900, ctx.currentTime + 0.08);
-      g.gain.setValueAtTime(0.15, ctx.currentTime);
-      g.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.12);
-    } else {
-      o.frequency.setValueAtTime(400, ctx.currentTime);
-      o.frequency.linearRampToValueAtTime(250, ctx.currentTime + 0.08);
-      g.gain.setValueAtTime(0.12, ctx.currentTime);
-      g.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.12);
-    }
-    o.start(); o.stop(ctx.currentTime + 0.15);
-  } catch(e) {}
+    if (!actx) actx = new (window.AudioContext||window.webkitAudioContext)();
+    const o = actx.createOscillator(), g = actx.createGain();
+    o.connect(g); g.connect(actx.destination);
+    const t = actx.currentTime;
+    o.frequency.setValueAtTime(type==='plus'?600:400, t);
+    o.frequency.linearRampToValueAtTime(type==='plus'?900:250, t+0.08);
+    g.gain.setValueAtTime(0.15, t);
+    g.gain.linearRampToValueAtTime(0, t+0.13);
+    o.start(t); o.stop(t+0.15);
+  } catch(e){}
 }
 
-// ============================================================
-// CART
-// ============================================================
-function getAllItems() {
-  const all = [];
-  Object.values(menuData).forEach(items => all.push(...items));
-  return all;
-}
+// ── CART ─────────────────────────────────────────
+function allItems() { return Object.values(menuData).flat(); }
 
 function changeQty(id, delta) {
-  const item = getAllItems().find(i => i.id === id);
+  const item = allItems().find(i => i.id===id);
   if (!item) return;
-  const cur = cart[id]?.qty || 0;
-  const next = Math.max(0, cur + delta);
-  if (next === 0) delete cart[id];
-  else cart[id] = { ...item, qty: next };
+  const cur  = cart[id]?.qty||0;
+  const next = Math.max(0, cur+delta);
+  if (next===0) delete cart[id]; else cart[id] = {...item, qty:next};
   document.getElementById(`qty_${id}`).textContent = next;
-  // 효과음
-  if (delta > 0) playSound('plus');
-  else if (cur > 0) playSound('minus');
+  if (delta>0) sound('plus'); else if (cur>0) sound('minus');
   updateCartUI();
 }
 
 function updateCartUI() {
-  const items = Object.values(cart);
-  const total = items.reduce((s, i) => s + i.price * i.qty, 0);
-  const count = items.reduce((s, i) => s + i.qty, 0);
+  const items    = Object.values(cart);
+  const total    = items.reduce((s,i)=>s+i.price*i.qty, 0);
+  const count    = items.reduce((s,i)=>s+i.qty, 0);
+  const totalStr = total%1===0 ? String(total) : total.toFixed(1);
 
-  document.getElementById('cartCountHeader').textContent = count;
-  document.getElementById('bottomTotal').textContent = `$${total % 1 === 0 ? total : total.toFixed(1)}`;
+  document.getElementById('cartCount').textContent   = count;
+  document.getElementById('bottomTotal').textContent = `$${totalStr}`;
+  document.getElementById('bottomBar').classList.toggle('show', count>0);
 
-  const bottomBar = document.getElementById('bottomBar');
-  bottomBar.classList.toggle('show', count > 0);
-
-  // cart sheet
-  const cartItemsEl = document.getElementById('cartItems');
-  const cartTotalEl = document.getElementById('cartTotal');
+  const itemsEl  = document.getElementById('cartItems');
+  const totalBox = document.getElementById('cartTotalBox');
   const orderBtn = document.getElementById('orderBtn');
 
-  if (items.length === 0) {
-    cartItemsEl.innerHTML = '<div class="cart-empty">🛒 មិនទាន់មានការកម្មង់<br>아직 선택한 메뉴가 없어요</div>';
-    cartTotalEl.style.display = 'none';
+  if (items.length===0) {
+    itemsEl.innerHTML = `<div class="cart-empty">🛒 មិនទាន់មានការកម្មង់<br>아직 선택한 메뉴가 없어요</div>`;
+    totalBox.style.display = 'none';
     orderBtn.disabled = true;
+    orderBtn.textContent = '✅ បញ្ជូនការកម្មង់ / 주문하기';
   } else {
-    cartItemsEl.innerHTML = items.map(i => `
-      <div class="cart-item">
+    itemsEl.innerHTML = items.map(i => {
+      const sub = i.price*i.qty;
+      const ss  = sub%1===0 ? sub : sub.toFixed(1);
+      return `<div class="cart-item">
         <div>
-          <div class="cart-item-name">${i.nameKm || i.nameKr}</div>
-          <div class="cart-item-name-kr">${i.nameKr} × ${i.qty}</div>
+          <div class="cart-item-name">${i.nameKm||i.nameKr}</div>
+          <div class="cart-item-sub">${i.nameKr} × ${i.qty}</div>
         </div>
         <div class="cart-item-right">
-          <div class="cart-item-price">$${(i.price * i.qty) % 1 === 0 ? i.price * i.qty : (i.price * i.qty).toFixed(1)}</div>
+          <div class="cart-item-price">$${ss}</div>
           <button class="cart-remove" onclick="removeItem('${i.id}')">✕</button>
         </div>
-      </div>`).join('');
-    cartTotalEl.style.display = 'block';
-    document.getElementById('cartTotalPrice').textContent = `$${total % 1 === 0 ? total : total.toFixed(1)}`;
+      </div>`;
+    }).join('');
+    totalBox.style.display = 'flex';
+    document.getElementById('cartTotalPrice').textContent = `$${totalStr}`;
     orderBtn.disabled = false;
   }
 }
 
 function removeItem(id) {
-  if (cart[id]) {
-    document.getElementById(`qty_${id}`).textContent = '0';
-    delete cart[id];
-    updateCartUI();
-  }
+  const el = document.getElementById(`qty_${id}`);
+  if (el) el.textContent = '0';
+  delete cart[id];
+  updateCartUI();
 }
 
-function openCart() {
-  document.getElementById('cartOverlay').classList.add('open');
-}
-
-function closeCart() {
-  document.getElementById('cartOverlay').classList.remove('open');
-}
-
+function openCart()  { document.getElementById('cartOverlay').classList.add('open'); }
+function closeCart() { document.getElementById('cartOverlay').classList.remove('open'); }
 function handleOverlayClick(e) {
-  if (e.target === document.getElementById('cartOverlay')) closeCart();
+  if (e.target===document.getElementById('cartOverlay')) closeCart();
 }
 
-// ============================================================
-// SUBMIT ORDER
-// ============================================================
-function submitOrder() {
+// ── SUBMIT ORDER ─────────────────────────────────
+async function submitOrder() {
   const items = Object.values(cart);
-  if (items.length === 0) return;
+  if (items.length===0) return;
 
-  const tg = window.Telegram?.WebApp;
-  const user = tg?.initDataUnsafe?.user;
-  const userName = user
-    ? `${user.first_name || ''}${user.last_name ? ' ' + user.last_name : ''}`.trim()
-    : '고객';
-  const userHandle = user?.username ? `@${user.username}` : '';
+  const btn = document.getElementById('orderBtn');
+  btn.disabled = true;
+  btn.textContent = '⏳ កំពុងបញ្ជូន... / 전송 중...';
 
-  const total = items.reduce((s, i) => s + i.price * i.qty, 0);
-  const totalStr = total % 1 === 0 ? total : total.toFixed(1);
-
-  const now = new Date();
-  const timeStr = now.toLocaleString('ko-KR', {
-    timeZone: 'Asia/Phnom_Penh',
-    month: '2-digit', day: '2-digit',
-    hour: '2-digit', minute: '2-digit'
+  const tg     = window.Telegram?.WebApp;
+  const user   = tg?.initDataUnsafe?.user;
+  const name   = user ? `${user.first_name||''}${user.last_name?' '+user.last_name:''}`.trim() : 'Guest';
+  const handle = user?.username ? ` @${user.username}` : '';
+  const total    = items.reduce((s,i)=>s+i.price*i.qty, 0);
+  const totalStr = total%1===0 ? String(total) : total.toFixed(1);
+  const timeStr  = new Date().toLocaleString('ko-KR',{
+    timeZone:'Asia/Phnom_Penh', month:'2-digit', day:'2-digit',
+    hour:'2-digit', minute:'2-digit'
   });
 
   let msg = `🧾 ការកម្មង់ថ្មី / 새 주문\n`;
-  msg += `━━━━━━━━━━━━━━━━━\n`;
-  msg += `👤 ${userName}${userHandle ? ' ' + userHandle : ''}\n`;
-  msg += `🕐 ${timeStr}\n`;
-  msg += `━━━━━━━━━━━━━━━━━\n`;
+  msg    += `━━━━━━━━━━━━━━━━━\n`;
+  msg    += `👤 ${name}${handle}\n`;
+  msg    += `🕐 ${timeStr}\n`;
+  msg    += `━━━━━━━━━━━━━━━━━\n`;
   items.forEach(i => {
-    const sub = i.price * i.qty;
-    msg += `• ${i.nameKm || i.nameKr} (${i.nameKr})\n`;
-    msg += `  ${i.qty}개 × $${i.price} = $${sub % 1 === 0 ? sub : sub.toFixed(1)}\n`;
+    const sub = i.price*i.qty;
+    const ss  = sub%1===0 ? sub : sub.toFixed(1);
+    msg += `• ${i.nameKm||i.nameKr} (${i.nameKr})\n`;
+    msg += `  ${i.qty}개 × $${i.price} = $${ss}\n`;
   });
   msg += `━━━━━━━━━━━━━━━━━\n`;
   msg += `💰 សរុប / 합계: $${totalStr}`;
 
-  if (tg) {
-    tg.sendData(msg);
-    tg.close(); // 명시적으로 앱 닫기
-  } else {
-    // 브라우저 테스트용
-    alert('📋 주문 내용:\n\n' + msg);
-    console.log(msg);
+  try {
+    const res  = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ chat_id: OWNER_ID, text: msg })
+    });
+    const data = await res.json();
+    if (data.ok) {
+      closeCart();
+      showConfirm(msg, totalStr);
+    } else {
+      throw new Error(data.description||'전송 실패');
+    }
+  } catch(err) {
+    console.error(err);
+    btn.disabled = false;
+    btn.textContent = '✅ បញ្ជូនការកម្មង់ / 주문하기';
+    alert('❌ 전송 실패. 다시 시도해주세요.\n'+err.message);
   }
 }
 
-// ============================================================
-// LOAD DATA
-// ============================================================
+function showConfirm(msg, totalStr) {
+  document.getElementById('confirmMsg').textContent   = msg;
+  document.getElementById('confirmTotal').textContent = `💰 $${totalStr}`;
+  document.getElementById('confirmOverlay').classList.add('open');
+}
+function closeConfirm() {
+  document.getElementById('confirmOverlay').classList.remove('open');
+  window.Telegram?.WebApp?.close();
+}
+
+// ── FALLBACK DATA ────────────────────────────────
+const FALLBACK = {
+  pork: [
+    {id:'pork_1',nameKr:'삼겹살',  nameKm:'សាច់ជ្រូកបីជាន់',weight:'1kg',price:10,  imgSrc:''},
+    {id:'pork_2',nameKr:'항정살',  nameKm:'សាច់ស្រួយ',       weight:'1kg',price:16.5,imgSrc:''},
+    {id:'pork_3',nameKr:'목살',    nameKm:'សាច់ស្មាមុខ',     weight:'1kg',price:10,  imgSrc:''},
+  ],
+  beef: [
+    {id:'beef_1',nameKr:'갈비살',  nameKm:'សាច់ចន្លោះឆ្អឹង',weight:'1kg',price:25,  imgSrc:''},
+    {id:'beef_2',nameKr:'La갈비',  nameKm:'សាច់គោជាប់ឆ្អឹង',weight:'',   price:26,  imgSrc:''},
+    {id:'beef_3',nameKr:'차돌',    nameKm:'សាច់គោបីជាន់',   weight:'',   price:17,  imgSrc:''},
+  ],
+  kimchi: [
+    {id:'kimchi_1',nameKr:'배추김치',nameKm:'គីមឈី ស្ពៃបូកគោ',weight:'',price:6,imgSrc:''},
+    {id:'kimchi_2',nameKr:'깍두기',  nameKm:'គីមឈី ឆៃថៅ',     weight:'',price:6,imgSrc:''},
+    {id:'kimchi_3',nameKr:'파김치',  nameKm:'គីមឈី ស្លឹកខ្ទឹម',weight:'',price:7,imgSrc:''},
+  ],
+  vegetable: [
+    {id:'veg_1',nameKr:'쌈채소 대',nameKm:'បន្លែទូទៅ ចានធំ', weight:'',price:3,  imgSrc:''},
+    {id:'veg_2',nameKr:'쌈채소 소',nameKm:'បន្លែទូទៅចានតូច',weight:'',price:1.5,imgSrc:''},
+  ],
+  pickle: [
+    {id:'pickle_1',nameKr:'쌈무',      nameKm:'ជ្រក់ឆៃថាវ',     weight:'',price:3,  imgSrc:''},
+    {id:'pickle_2',nameKr:'양파 장아찌',nameKm:'ជ្រក់ខ្ទឹមបារាំង',weight:'',price:2.5,imgSrc:''},
+    {id:'pickle_3',nameKr:'고추 장아찌',nameKm:'ជ្រក់ម្ទេស',      weight:'',price:2.5,imgSrc:''},
+    {id:'pickle_4',nameKr:'파채 대',   nameKm:'ខ្ទឹមខ្យល់',      weight:'',price:3,  imgSrc:''},
+  ]
+};
+
+// ── INIT ─────────────────────────────────────────
 async function loadMenu() {
   try {
-    const res = await fetch(SHEET_CSV);
+    const res  = await fetch(SHEET_CSV);
     const text = await res.text();
-    menuData = parseCSV(text);
-    renderApp();
-    updateCartUI();
-  } catch (e) {
-    console.warn('시트 로드 실패, 샘플 데이터 사용:', e);
-    menuData = {
-      pork: [
-        { id: 'pork_1', nameKr: '삼겹살', nameKm: 'សាច់ជ្រូកបីជាន់', weight: '1kg', price: 10, imgSrc: '' },
-        { id: 'pork_2', nameKr: '항정살', nameKm: 'សាច់ស្រួយ', weight: '1kg', price: 16.5, imgSrc: '' },
-        { id: 'pork_3', nameKr: '목살', nameKm: 'សាច់ស្មាមុខ', weight: '1kg', price: 10, imgSrc: '' },
-      ],
-      beef: [
-        { id: 'beef_1', nameKr: '갈비살', nameKm: 'សាច់ចន្លោះឆ្អឹង', weight: '1kg', price: 25, imgSrc: '' },
-        { id: 'beef_2', nameKr: 'La갈비', nameKm: 'សាច់គោជាប់ឆ្អឹង', weight: '', price: 26, imgSrc: '' },
-        { id: 'beef_3', nameKr: '차돌', nameKm: 'សាច់គោបីជាន់', weight: '', price: 17, imgSrc: '' },
-      ],
-      kimchi: [
-        { id: 'kimchi_1', nameKr: '배추김치', nameKm: 'គីមឈី ស្ពៃបូកគោ', weight: '', price: 6, imgSrc: '' },
-        { id: 'kimchi_2', nameKr: '깍두기', nameKm: 'គីមឈី ឆៃថៅ', weight: '', price: 6, imgSrc: '' },
-        { id: 'kimchi_3', nameKr: '파김치', nameKm: 'គីមឈី ស្លឹកខ្ទឹម', weight: '', price: 7, imgSrc: '' },
-      ],
-      vegetable: [
-        { id: 'veg_1', nameKr: '쌈채소 대', nameKm: 'បន្លែទូទៅ ចានធំ', weight: '', price: 3, imgSrc: '' },
-        { id: 'veg_2', nameKr: '쌈채소 소', nameKm: 'បន្លែទូទៅចានតូច', weight: '', price: 1.5, imgSrc: '' },
-      ],
-      pickle: [
-        { id: 'pickle_1', nameKr: '쌈무', nameKm: 'ជ្រក់ឆៃថាវកូរ៉េជូអែម', weight: '', price: 3, imgSrc: '' },
-        { id: 'pickle_2', nameKr: '양파 장아찌', nameKm: 'ជ្រក់ខ្ទឹមបារាំងទឹកសុីអុីវ', weight: '', price: 2.5, imgSrc: '' },
-        { id: 'pickle_3', nameKr: '고추 장아찌', nameKm: 'ជ្រក់ម្ទេស', weight: '', price: 2.5, imgSrc: '' },
-        { id: 'pickle_4', nameKr: '파채 대', nameKm: 'ខ្ទឹមខ្យល់(ទឹកសុសកូរ៉េ)', weight: '', price: 3, imgSrc: '' },
-      ]
-    };
-    renderApp();
-    updateCartUI();
+    const parsed = parseCSV(text);
+    menuData = Object.values(parsed).some(a=>a.length>0) ? parsed : FALLBACK;
+  } catch(e) {
+    menuData = FALLBACK;
   }
+  renderApp();
+  updateCartUI();
 }
 
-// 텔레그램 WebApp 초기화
+// 텔레그램 초기화
 const tgApp = window.Telegram?.WebApp;
 if (tgApp) {
   tgApp.ready();
   tgApp.expand();
-  if (tgApp.viewportHeight) {
-    document.documentElement.style.setProperty('--tg-viewport-height', tgApp.viewportHeight + 'px');
-  }
-  tgApp.onEvent('viewportChanged', () => {
-    document.documentElement.style.setProperty('--tg-viewport-height', tgApp.viewportHeight + 'px');
-  });
+  tgApp.setHeaderColor?.('#1A1A1A');
+  tgApp.setBackgroundColor?.('#F5F0EB');
 }
 
-loadMenu().then(() => {
-  setTimeout(setupScrollSpy, 400);
-});
+loadMenu();
 </script>
 </body>
 </html>
