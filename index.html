@@ -695,9 +695,17 @@ function handleOverlayClick(e) {
 // ============================================================
 // SUBMIT ORDER
 // ============================================================
-function submitOrder() {
+const BOT_TOKEN = '8641523947:AAFk0RrMLG4zaMatZjjX-SrJlRkNzztgRxI';
+const OWNER_CHAT_ID = '718784244'; // 테스트용 (나중에 아내 ID로 교체)
+
+async function submitOrder() {
   const items = Object.values(cart);
   if (items.length === 0) return;
+
+  // 버튼 비활성화 (중복 클릭 방지)
+  const btn = document.getElementById('orderBtn');
+  btn.disabled = true;
+  btn.textContent = '⏳ កំពុងបញ្ជូន... / 전송 중...';
 
   const tg = window.Telegram?.WebApp;
   const user = tg?.initDataUnsafe?.user;
@@ -705,6 +713,7 @@ function submitOrder() {
     ? `${user.first_name || ''}${user.last_name ? ' ' + user.last_name : ''}`.trim()
     : '고객';
   const userHandle = user?.username ? `@${user.username}` : '';
+  const userId = user?.id ? `(ID: ${user.id})` : '';
 
   const total = items.reduce((s, i) => s + i.price * i.qty, 0);
   const totalStr = total % 1 === 0 ? total : total.toFixed(1);
@@ -718,7 +727,7 @@ function submitOrder() {
 
   let msg = `🧾 ការកម្មង់ថ្មី / 새 주문\n`;
   msg += `━━━━━━━━━━━━━━━━━\n`;
-  msg += `👤 ${userName}${userHandle ? ' ' + userHandle : ''}\n`;
+  msg += `👤 ${userName} ${userHandle} ${userId}\n`;
   msg += `🕐 ${timeStr}\n`;
   msg += `━━━━━━━━━━━━━━━━━\n`;
   items.forEach(i => {
@@ -729,13 +738,32 @@ function submitOrder() {
   msg += `━━━━━━━━━━━━━━━━━\n`;
   msg += `💰 សរុប / 합계: $${totalStr}`;
 
-  if (tg) {
-    tg.sendData(msg);
-    tg.close(); // 명시적으로 앱 닫기
-  } else {
-    // 브라우저 테스트용
-    alert('📋 주문 내용:\n\n' + msg);
-    console.log(msg);
+  try {
+    const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: OWNER_CHAT_ID,
+        text: msg
+      })
+    });
+    const data = await res.json();
+
+    if (data.ok) {
+      // 성공 — 앱 닫기
+      if (tg) {
+        tg.close();
+      } else {
+        alert('✅ 주문이 전송되었습니다!\n\n' + msg);
+      }
+    } else {
+      throw new Error(data.description || '전송 실패');
+    }
+  } catch (err) {
+    console.error('주문 전송 오류:', err);
+    btn.disabled = false;
+    btn.textContent = '✅ បញ្ជូនការកម្មង់ / 주문하기';
+    alert('❌ 주문 전송에 실패했습니다. 다시 시도해주세요.\n' + err.message);
   }
 }
 
